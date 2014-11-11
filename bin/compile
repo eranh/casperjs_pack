@@ -32,8 +32,8 @@ echo "-----> Cloning CasperJS"
 cd ${BUILD_DIR}/vendor
 git clone git://github.com/n1k0/casperjs.git
 echo "-----> Cloning CasperJS finished"
-echo "-----> checkout CasperJS"
-git checkout ${CASPER_VERSION}
+#echo "-----> checkout CasperJS"
+#git checkout ${CASPER_VERSION}
 
 echo "-----> Installing .profile.d/casperjs.sh"
 mkdir -p ${BUILD_DIR}/.profile.d
