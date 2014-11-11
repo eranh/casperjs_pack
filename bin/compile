@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -e
+
+# dirs
+BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+# config
+VERSION="1.9.7"
+CASPER_VERSION="master"
+
+# Buildpack URL
+ARCHIVE_NAME=phantomjs-${VERSION}-linux-x86_64
+FILE_NAME=${ARCHIVE_NAME}.tar.bz2
+BUILDPACK_PHANTOMJS_PACKAGE=https://phantomjs.googlecode.com/files/${FILE_NAME}
+
+mkdir -p $CACHE_DIR
+if ! [ -e $CACHE_DIR/$FILE_NAME ]; then
+  echo "-----> Fetching PhantomJS ${VERSION} binaries at ${BUILDPACK_PHANTOMJS_PACKAGE}"
+  curl $BUILDPACK_PHANTOMJS_PACKAGE -L -s -o $CACHE_DIR/$FILE_NAME
+fi
+
+echo "-----> Extracting PhantomJS ${VERSION} binaries to ${BUILD_DIR}/vendor/phantomjs"
+mkdir -p $CACHE_DIR/$ARCHIVE_NAME
+mkdir -p $BUILD_DIR/vendor
+tar jxf $CACHE_DIR/$FILE_NAME -C $CACHE_DIR
+mv $CACHE_DIR/$ARCHIVE_NAME $BUILD_DIR/vendor/phantomjs
+
+echo "-----> Cloning CasperJS"
+cd ${BUILD_DIR}/vendor
+git clone git://github.com/n1k0/casperjs.git
+git checkout ${CASPER_VERSION}
+
+echo "-----> Installing .profile.d/casperjs.sh"
+mkdir -p ${BUILD_DIR}/.profile.d
+cp ${BIN_DIR}/casperjs.sh ${BUILD_DIR}/.profile.d/
